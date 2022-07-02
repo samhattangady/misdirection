@@ -1,0 +1,16 @@
+Notes
+-----
+
+02 Jul 2022:
+So we just spent some time figuring out how to set up zig to work correctly
+with raylib, but it turns out that the raylib build process for web is via all
+the emscripten jank, and I don't feel like doing that when I have a perfectly
+good renderer right here.
+
+So we're back here, and we've done some tweaking to clean up the zig-sdl base,
+and we can start off working. What's the first thing that we should probably
+do though?
+
+I think a good place to start off would be the path drawing maybe? So create a
+character. Then attach a path to them. And then draw that path, and figure out
+how you can do that bit. Okay lets go.
