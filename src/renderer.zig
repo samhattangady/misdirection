@@ -15,6 +15,7 @@ const Vector4_gl = helpers.Vector4_gl;
 const Camera = helpers.Camera;
 
 const App = @import("app.zig").App;
+const colors = @import("colors.zig");
 const WEB_BUILD = constants.WEB_BUILD;
 
 const VERTEX_BASE_FILE: [:0]const u8 = if (WEB_BUILD) @embedFile("../data/shaders/web_vertex.glsl") else @embedFile("../data/shaders/vertex.glsl");
@@ -236,26 +237,69 @@ pub const Renderer = struct {
         c.glClearColor(0.0, 0.0, 0.0, 1.0);
         c.glClear(c.GL_COLOR_BUFFER_BIT | c.GL_DEPTH_BUFFER_BIT);
         {
-            const magician = app.magician;
-            self.draw_quad_centered(magician.position, magician.size, .{ .x = 0.4, .y = 0.4, .z = 0.5, .w = 1 });
-            const path = magician.path;
+            const character = app.assistant;
+            self.draw_quad_centered(character.position, character.size, character.color);
+            const path = character.path;
             for (path.points.items) |pos, i| {
                 if (i == path.points.items.len - 1) break;
+                const color = if (@mod(i, 2) == 0) character.color.lerped(colors.white, 0.3) else character.color.lerped(colors.white, 0.8);
                 const pos2 = path.points.items[i + 1];
-                self.draw_line(pos, pos2, .{ .x = 1, .y = 1, .z = 1, .w = 1 }, 3, self.camera);
+                self.draw_line(pos, pos2, color, 3, self.camera);
             }
             {
                 // used length
                 const pos = Vector2{ .x = 40, .y = self.camera.render_size().y - 40 };
-                const size = Vector2{ .x = 40, .y = -1 * (self.camera.render_size().y - 80) * (1.0 - magician.path.fract_used()) };
-                self.draw_quad(pos, size, .{ .x = 1, .y = 1, .z = 1, .w = 1 });
+                const size = Vector2{ .x = 40, .y = -1 * (self.camera.render_size().y - 80) * (1.0 - character.path.fract_used()) };
+                self.draw_quad(pos, size, character.color);
             }
             if (path.selectable_pos()) |pos| {
+                self.draw_circle(pos, 24, character.color, self.camera);
                 self.draw_circle(pos, 48, .{ .x = 0.7, .y = 0.7, .z = 0.7, .w = 0.7 }, self.camera);
             }
             if (path.delete_pos()) |pos| {
                 self.draw_circle(pos, 12, .{ .x = 0.9, .y = 0.1, .z = 0.1, .w = 0.7 }, self.camera);
             }
+        }
+        {
+            const character = app.magician;
+            self.draw_quad_centered(character.position, character.size, character.color);
+            const path = character.path;
+            for (path.points.items) |pos, i| {
+                if (i == path.points.items.len - 1) break;
+                const pos2 = path.points.items[i + 1];
+                const color = if (@mod(i, 2) == 0) character.color.lerped(colors.white, 0.3) else character.color.lerped(colors.white, 0.8);
+
+                self.draw_line(pos, pos2, color, 3, self.camera);
+            }
+            {
+                // used length
+                const pos = Vector2{ .x = 100, .y = self.camera.render_size().y - 40 };
+                const size = Vector2{ .x = 40, .y = -1 * (self.camera.render_size().y - 80) * (1.0 - character.path.fract_used()) };
+                self.draw_quad(pos, size, character.color);
+            }
+            if (path.selectable_pos()) |pos| {
+                self.draw_circle(pos, 24, character.color, self.camera);
+                self.draw_circle(pos, 48, .{ .x = 0.7, .y = 0.7, .z = 0.7, .w = 0.7 }, self.camera);
+            }
+            if (path.delete_pos()) |pos| {
+                self.draw_circle(pos, 12, .{ .x = 0.9, .y = 0.1, .z = 0.1, .w = 0.7 }, self.camera);
+            }
+        }
+        for (app.audience.items) |aud| {
+            const color = Vector4_gl{ .x = 0.3, .y = 0.3, .z = 0.3, .w = 1.0 };
+            self.draw_circle(aud.position, 12, color, self.camera);
+            self.draw_line(aud.position, aud.position.added(aud.direction), color, 3, self.camera);
+        }
+        {
+            // progress_tracker
+            const pos = Vector2{ .x = 90, .y = 40 + ((self.camera.render_size().y - 80) * (app.progress)) };
+            const size = Vector2{ .x = 120, .y = 8 };
+            self.draw_quad_centered(pos, size, .{ .x = 1, .y = 1, .z = 1, .w = 1 });
+        }
+        if (app.new_audience_pos) |pos| {
+            const color = Vector4_gl{ .x = 0.5, .y = 0.8, .z = 0.8, .w = 1.0 };
+            self.draw_circle(pos, 12, color, self.camera);
+            self.draw_line(pos, pos.added(app.new_audience_direction), color, 3, self.camera);
         }
         self.draw_buffers();
         if (!WEB_BUILD) {

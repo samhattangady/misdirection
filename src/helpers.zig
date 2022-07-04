@@ -69,6 +69,10 @@ pub const Vector2 = struct {
         };
     }
 
+    pub fn subtracted(v1: *const Vector2, v2: Vector2) Vector2 {
+        return Vector2.subtract(v1.*, v2);
+    }
+
     pub fn distance(v1: Vector2, v2: Vector2) f32 {
         return @sqrt(((v2.x - v1.x) * (v2.x - v1.x)) + ((v2.y - v1.y) * (v2.y - v1.y)));
     }
@@ -139,6 +143,10 @@ pub const Vector2 = struct {
             .x = v1.x / l,
             .y = v1.y / l,
         };
+    }
+
+    pub fn normalized(v1: *const Vector2) Vector2 {
+        return Vector2.normalize(v1.*);
     }
 
     /// Gives the clockwise angle in radians from first vector to second vector
@@ -352,6 +360,10 @@ pub const Vector4_gl = extern struct {
             .z = lerpf(v1.z, v2.z, t),
             .w = lerpf(v1.w, v2.w, t),
         };
+    }
+
+    pub fn lerped(v1: *const Vector4_gl, v2: Vector4_gl, t: f32) Vector4_gl {
+        return Vector4_gl.lerp(v1.*, v2, t);
     }
 
     pub fn equals(v1: Vector4_gl, v2: Vector4_gl) bool {

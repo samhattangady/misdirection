@@ -14,3 +14,23 @@ do though?
 I think a good place to start off would be the path drawing maybe? So create a
 character. Then attach a path to them. And then draw that path, and figure out
 how you can do that bit. Okay lets go.
+
+---
+
+04 Jul 2022:
+Okay. Lets get back to it then. What is the thing that we want to implement
+now?
+
+So how do we want the audience to behave? We could have it such that they move
+around. But where do they move around? Ideally, there will be some audience
+zone, and they should not be allowed to leave that zone. So if there is any
+activity in their bubble, that would cause them to move towards our character.
+If they spot the assistant moving around, then game over.
+
+This just feels a little more action than puzzle. Though the controls are
+puzzlish. So what is the alternative in that regard? 
+
+I am not sure which option is more interesting? Where they travel at the same
+speed, or they travel the distance over the same time...
+If they are at the same speed, I think it makes some things easier to think
+about?
